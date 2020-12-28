@@ -1,6 +1,4 @@
 {
-  "defaultVolume": 1.2,
-  "defaultExtension" : "mp3",
   "clips":[
     {"name":"balls"},
     {"name":"cream", "volume": 1.0},

@@ -75,6 +75,8 @@ function helpTheNoobs(message){
   help += '|                      |\n';
   help += '+----------------------+\n';
   help += '\n';
+  help += 'Am I being problematic? Use !gtfo to initiate self destruct! \n';
+  help += '\n';
   help += 'Dismiss me with !begone \n';
   help += '\n';
   help += 'Audio\n';
@@ -125,10 +127,12 @@ bot.on('message', async message => {
 
     if(commandName === 'help'){
       helpTheNoobs(message);
+    }else if(commandName === 'gtfo'){
+      bot.destroy();
+      process.exit(0);
     }else if(commandName === 'begone'){
       message.member.voice.channel.leave();
-    }
-    else{      
+    }else{      
       playClip(commandName);
     }
   }else{
