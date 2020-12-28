@@ -1,0 +1,22 @@
+{
+  "defaultVolume": 1.2,
+  "defaultExtension" : "mp3",
+  "clips":[
+    {"name":"balls"},
+    {"name":"cream", "volume": 1.0},
+    {"name":"ding", "volume": 0.6},
+    {"name":"doit", "volume": 1.5},
+    {"name":"done", "volume": 0.6},
+    {"name":"ghoul", "volume": 1.0, "file":"ghoul.wav"},
+    {"name":"nice"},
+    {"name":"plums"},
+    {"name":"potion"},
+    {"name":"power", "volume": 1.0},
+    {"name":"sam", "volume": 1.0},
+    {"name":"schfifty"},
+    {"name":"watch", "volume": 1.0},
+    {"name":"whistle"},
+    {"name":"will"},
+    {"name":"yeah", "volume": 1.0}
+  ]
+}

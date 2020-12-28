@@ -3,28 +3,26 @@ require('dotenv').config();
 const Discord = require('discord.js');
 const bot = new Discord.Client();
 const path = require('path');
+const clipsSpec = require('./clips.json');
 const TOKEN = process.env.TOKEN;
 const prefix = '!';
 const fs = require('fs'); 
 const readline = require('readline');
+const Clip = require('./Clip.js');
 const paths = {
   audio : null
 }
 
 var clips = new Map();
 
-class Clip {
-  constructor(name,volume){
-    this.name = name;
-    this.volume = volume;
-  }
-}
-
 bot.login(TOKEN);
 
 bot.on('ready', () => {
   console.info(`Logged in as ${bot.user.tag}!`);
 
+  //Setup clip meta for use
+  loadAudio();
+  
   paths.audio = path.join(__dirname, 'audio');
 });
 
@@ -48,23 +46,12 @@ async function validate(message) {
 
 }
 
-function handleFiles() {
-  
-  const file = readline.createInterface({ 
-    input: fs.createReadStream('clipsAndVolumes.txt'), 
-    output: process.stdout, 
-    terminal: false
-  });
+function loadAudio() {
 
-  //add null file check? meh
-  file.on('line', (line) => { 
-     //split on pipe, should be fine for now?
-    var clipNameAndVolume = line.split("|");
-    clips.set(clipNameAndVolume[0],new Clip(clipNameAndVolume[0], clipNameAndVolume[1]));
-
-    //debug
-    //console.info(clips.get(clipNameAndVolume[0])); 
- }); 
+  clipsSpec.clips.forEach(clipSpec => {
+    const clip = new Clip(clipSpec.name, clipSpec.volume, clipSpec.file);
+    clips.set(clip.name, clip);
+  })
 
 }
 
@@ -99,15 +86,13 @@ function helpTheNoobs(message){
 
 function playClip(clipName){  
 
-  //TODO
-  //figure out why bot doesnt fire message on first call
 
   console.info('inside play clip');
+
   if(clips.has(clipName)){
     const clip = clips.get(clipName);
-    let mp3FileName = `${clip.name}.mp3`;
 
-    const dispatcher = connection.play(path.join(paths.audio, mp3FileName), {
+    const dispatcher = connection.play(path.join(paths.audio, clip.file), {
       volume: clip.volume,
     });
     
@@ -119,9 +104,6 @@ function playClip(clipName){
 
 //MAIN
 bot.on('message', async message => {
-
-    //Setup clipsAndVolumes for use
-  handleFiles(); 
 
   console.info('message received');
 
