@@ -4,7 +4,7 @@ const bot = new Discord.Client();
 const path = require('path');
 const TOKEN = process.env.TOKEN;
 
-const paths ={
+const paths = {
   audio : null
 }
 
