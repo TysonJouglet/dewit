@@ -6,8 +6,6 @@ const path = require('path');
 const clipsSpec = require('./clips.json');
 const TOKEN = process.env.TOKEN;
 const prefix = '!';
-const fs = require('fs'); 
-const readline = require('readline');
 const Clip = require('./Clip.js');
 const paths = {
   audio : null
