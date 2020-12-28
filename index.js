@@ -66,6 +66,46 @@ bot.on('message', async message => {
     const dispatcher = connection.play(path.join(paths.audio,'watch.mp3'), {
       volume: 1.2,
     });
+  }else if(message.content === '!whistle'){
+    const dispatcher = connection.play(path.join(paths.audio,'whistle.mp3'), {
+      volume: 1.2,
+    });
+  }else if(message.content === '!power'){
+    const dispatcher = connection.play(path.join(paths.audio,'power.mp3'), {
+      volume: 1.2,
+    });
+  }else if(message.content === '!schfifty'){
+    const dispatcher = connection.play(path.join(paths.audio,'schfifty.mp3'), {
+      volume: 1.2,
+    });
+  }else if(message.content === '!ding'){
+    const dispatcher = connection.play(path.join(paths.audio,'ding.mp3'), {
+      volume: 0.6,
+    });
+  }else if(message.content === '!potion'){
+    const dispatcher = connection.play(path.join(paths.audio,'potion.mp3'), {
+      volume: 1.2,
+    });
+  }else if(message.content === '!ghoul'){
+    const dispatcher = connection.play(path.join(paths.audio,'ghoul.wav'), {
+      volume: 1.2,
+    });
+  }else if(message.content === '!done'){
+    const dispatcher = connection.play(path.join(paths.audio,'done.mp3'), {
+      volume: 1.0,
+    });
+  }else if(message.content === '!yeah'){
+    const dispatcher = connection.play(path.join(paths.audio,'yeah.mp3'), {
+      volume: 1.2,
+    });
+  }else if(message.content === '!cream'){
+    const dispatcher = connection.play(path.join(paths.audio,'cream.mp3'), {
+      volume: 1.2,
+    });
+  }else if(message.content === '!sam'){
+    const dispatcher = connection.play(path.join(paths.audio,'sam.mp3'), {
+      volume: 1.2,
+    });
   }else if(message.content === '!help'){
     let help = `\`\`\`
 !begone
@@ -76,11 +116,16 @@ bot.on('message', async message => {
 !plums
 !watch
 -- in progress --
-!whitles
+!whistle
 !power
 !schfifty
 !ding
-!potion\`\`\``;
+!potion
+!ghoul
+!done
+!yeah
+!cream
+!sam\`\`\``;
 
     message.channel.send(help);
   }
