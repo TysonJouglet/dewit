@@ -1,14 +1,24 @@
 require('dotenv').config();
+
 const Discord = require('discord.js');
 const bot = new Discord.Client();
 const path = require('path');
 const TOKEN = process.env.TOKEN;
-
+const prefix = '!';
+const fs = require('fs'); 
+const readline = require('readline');
 const paths = {
   audio : null
 }
 
-const prefix = '!';
+var clips = new Map();
+
+class Clip {
+  constructor(name,volume){
+    this.name = name;
+    this.volume = volume;
+  }
+}
 
 bot.login(TOKEN);
 
@@ -18,7 +28,8 @@ bot.on('ready', () => {
   paths.audio = path.join(__dirname, 'audio');
 });
 
-
+//TODO : cleanup
+//code not used below?
 const commands = [
   {file : 'doit.mp3', volume: 1.5 }
 ];
@@ -30,106 +41,108 @@ async function getConnection(message){
   return undefined;
 }
 
+async function validate(message) {
+
+  if (!message.content.startsWith(prefix)) return false;  
+  if (!message.guild) return false;
+
+  connection = await getConnection(message);
+  if(!connection) return false;
+
+  //all good
+  return true;  
+
+}
+
+function handleFiles() {
+  
+  const file = readline.createInterface({ 
+    input: fs.createReadStream('clipsAndVolumes.txt'), 
+    output: process.stdout, 
+    terminal: false
+  });
+
+  //add null file check? meh
+  file.on('line', (line) => { 
+     //split on pipe, should be fine for now?
+    var clipNameAndVolume = line.split("|");
+    clips.set(clipNameAndVolume[0],new Clip(clipNameAndVolume[0], clipNameAndVolume[1]));
+
+    //debug
+    //console.info(clips.get(clipNameAndVolume[0])); 
+ }); 
+
+}
+
+function helpTheNoobs(message){
+
+  //TODO
+  //could make this use the clipsAndVolumes list 
+  //so we dont need to track name and volume changes in two spots
+
+  let help = `\`\`\`
+// !begone
+// !doit
+// !will
+// !nice
+// !balls
+// !plums
+// !watch
+// !whitles
+// !power
+// !schfifty
+// !ding
+// !potion \`\`\``;
+
+    message.channel.send(help);
+}
+
+function playClip(message){  
+
+  //TODO
+  //figure out why bot doesnt fire message on first call
+
+  console.info('inside play clip');
+  let msg = message.content;
+  
+  if(clips.has(msg)){
+    var clip = clips.get(msg);
+    let nameMinusExclamationMark = clip.name.replace(prefix,'');
+    let mp3FileName = `${nameMinusExclamationMark}.mp3`;
+
+    const dispatcher = connection.play(path.join(paths.audio, mp3FileName), {
+      volume: clip.volume,
+    });
+    
+  }else{
+    console.info('clip not found');
+    console.info('clip : ' + msg);
+  }
+
+}
+
+//MAIN
 bot.on('message', async message => {
+
+  //Setup clipsAndVolumes for use
+  handleFiles(); 
 
   // Voice only works in guilds, if the message does not come from a guild,
   // we ignore it
   console.info('message received');
-  if (!message.content.startsWith(prefix)) return;
-  if (!message.guild) return;
 
-  connection = await getConnection(message);
-
-  if(!connection) return;
-
-  if (message.content === '!doit') {
-    const dispatcher = connection.play(path.join(paths.audio,'doit.mp3'), {
-      volume: 1.5,
-    });
-  }else if(message.content === '!will'){
-    const dispatcher = connection.play(path.join(paths.audio,'will.mp3'), {
-      volume: 1.2,
-    });
-  }else if(message.content === '!nice'){
-    const dispatcher = connection.play(path.join(paths.audio,'nice.mp3'), {
-      volume: 1.2,
-    });
-  }else if(message.content === '!balls'){
-    const dispatcher = connection.play(path.join(paths.audio,'balls.mp3'), {
-      volume: 1.2,
-    });
-  }else if(message.content === '!plums'){
-    const dispatcher = connection.play(path.join(paths.audio,'plums.mp3'), {
-      volume: 1.2,
-    });
-  }else if(message.content === '!watch'){
-    const dispatcher = connection.play(path.join(paths.audio,'watch.mp3'), {
-      volume: 1.2,
-    });
-  }else if(message.content === '!whistle'){
-    const dispatcher = connection.play(path.join(paths.audio,'whistle.mp3'), {
-      volume: 1.2,
-    });
-  }else if(message.content === '!power'){
-    const dispatcher = connection.play(path.join(paths.audio,'power.mp3'), {
-      volume: 1.2,
-    });
-  }else if(message.content === '!schfifty'){
-    const dispatcher = connection.play(path.join(paths.audio,'schfifty.mp3'), {
-      volume: 1.2,
-    });
-  }else if(message.content === '!ding'){
-    const dispatcher = connection.play(path.join(paths.audio,'ding.mp3'), {
-      volume: 0.6,
-    });
-  }else if(message.content === '!potion'){
-    const dispatcher = connection.play(path.join(paths.audio,'potion.mp3'), {
-      volume: 1.2,
-    });
-  }else if(message.content === '!ghoul'){
-    const dispatcher = connection.play(path.join(paths.audio,'ghoul.wav'), {
-      volume: 1.2,
-    });
-  }else if(message.content === '!done'){
-    const dispatcher = connection.play(path.join(paths.audio,'done.mp3'), {
-      volume: 1.0,
-    });
-  }else if(message.content === '!yeah'){
-    const dispatcher = connection.play(path.join(paths.audio,'yeah.mp3'), {
-      volume: 1.2,
-    });
-  }else if(message.content === '!cream'){
-    const dispatcher = connection.play(path.join(paths.audio,'cream.mp3'), {
-      volume: 1.2,
-    });
-  }else if(message.content === '!sam'){
-    const dispatcher = connection.play(path.join(paths.audio,'sam.mp3'), {
-      volume: 1.2,
-    });
-  }else if(message.content === '!help'){
-    let help = `\`\`\`
-!begone
-!doit
-!will
-!nice
-!balls
-!plums
-!watch
--- in progress --
-!whistle
-!power
-!schfifty
-!ding
-!potion
-!ghoul
-!done
-!yeah
-!cream
-!sam\`\`\``;
-
-    message.channel.send(help);
+  if(validate(message)){    
+    if(message.content === '!help'){
+      helpTheNoobs(message);
+    }else if(message.content === '!begone'){
+           message.member.voice.channel.leave();
+    }
+    else{      
+      playClip(message);
+    }
+  }else{
+    //TODO
+    //maybe use default funny fail message of some sort??
   }
-  else if(message.content === '!begone'){
-    message.member.voice.channel.leave();
-  }
+ 
 });
