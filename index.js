@@ -4,8 +4,7 @@ const Discord = require('discord.js');
 const bot = new Discord.Client();
 const path = require('path');
 const clipsSpec = require('./clips.json');
-const TOKEN = process.env.TOKEN;
-const prefix = '!';
+const { TOKEN, prefix } = process.env;
 const Clip = require('./Clip.js');
 const paths = {
   audio : null
@@ -31,10 +30,21 @@ async function getConnection(message){
   return undefined;
 }
 
-async function validate(message) {
+function canProcessMessage(message){
+  
+  // must be a command
+  if (!message.content.startsWith(prefix)) return false;
 
-  if (!message.content.startsWith(prefix)) return false;  
+  // cannot be a command issued by the bot
+  if (message.author.username === bot.user.username) return false;
+
+  return true;
+}
+async function isValidCommand(message) {
+
+  // not really sure why this is needed but it was in the official documentation
   if (!message.guild) return false;
+
 
   connection = await getConnection(message);
   if(!connection) return false;
@@ -105,7 +115,10 @@ bot.on('message', async message => {
 
   console.info('message received');
 
-  if(await validate(message)){
+  // guard clauses to immediately stop processing invalid messages
+  if (!canProcessMessage(message)) return;
+
+  if(await isValidCommand(message)){
 
     //trying to limit the surface area of prefix throughout the code
     let commandName = message.content.replace(prefix,'');
@@ -121,6 +134,7 @@ bot.on('message', async message => {
   }else{
     //TODO
     //maybe use default funny fail message of some sort??
+    message.channel.send(`${message.author.username} is a noob. Use !help noob skum.`);
   }
  
 });
