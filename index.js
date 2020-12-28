@@ -115,8 +115,7 @@ function playClip(message){
     });
     
   }else{
-    console.info('clip not found');
-    console.info('clip : ' + msg);
+    console.info(`clip ${ msg } not found`);
   }
 
 }
@@ -127,11 +126,9 @@ bot.on('message', async message => {
   //Setup clipsAndVolumes for use
   handleFiles(); 
 
-  // Voice only works in guilds, if the message does not come from a guild,
-  // we ignore it
   console.info('message received');
 
-  if(validate(message)){    
+  if(await validate(message)){    
     if(message.content === '!help'){
       helpTheNoobs(message);
     }else if(message.content === '!begone'){
