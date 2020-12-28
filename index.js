@@ -18,6 +18,11 @@ bot.on('ready', () => {
   paths.audio = path.join(__dirname, 'audio');
 });
 
+
+const commands = [
+  {file : 'doit.mp3', volume: 1.5 }
+];
+
 async function getConnection(message){
   if (message.member.voice.channel) {
     return await message.member.voice.channel.join();
@@ -61,6 +66,23 @@ bot.on('message', async message => {
     const dispatcher = connection.play(path.join(paths.audio,'watch.mp3'), {
       volume: 1.2,
     });
+  }else if(message.content === '!help'){
+    let help = `\`\`\`
+!begone
+!doit
+!will
+!nice
+!balls
+!plums
+!watch
+-- in progress --
+!whitles
+!power
+!schfifty
+!ding
+!potion\`\`\``;
+
+    message.channel.send(help);
   }
   else if(message.content === '!begone'){
     message.member.voice.channel.leave();
