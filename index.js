@@ -28,12 +28,6 @@ bot.on('ready', () => {
   paths.audio = path.join(__dirname, 'audio');
 });
 
-//TODO : cleanup
-//code not used below?
-const commands = [
-  {file : 'doit.mp3', volume: 1.5 }
-];
-
 async function getConnection(message){
   if (message.member.voice.channel) {
     return await message.member.voice.channel.join();
@@ -77,45 +71,48 @@ function handleFiles() {
 function helpTheNoobs(message){
 
   //TODO
-  //could make this use the clipsAndVolumes list 
-  //so we dont need to track name and volume changes in two spots
+  // make this even better using special embedded bot messages: https://discordjs.guide/popular-topics/embeds.html#embed-preview
+  
+  let help = '\`\`\`\n';
+  help += '+----------------------+\n';
+  help += '|                      |\n';
+  help += '|    HELP THE NOOBS    |\n';
+  help += '|                      |\n';
+  help += '+----------------------+\n';
+  help += '\n';
+  help += 'Dismiss me with !begone \n';
+  help += '\n';
+  help += 'Audio\n';
+  help += '========================\n';
 
-  let help = `\`\`\`
-// !begone
-// !doit
-// !will
-// !nice
-// !balls
-// !plums
-// !watch
-// !whitles
-// !power
-// !schfifty
-// !ding
-// !potion \`\`\``;
+  clips.forEach(clip => {
+    help += `${prefix + clip.name}\n`
+  });
 
-    message.channel.send(help);
+  help += '\n';
+  help += '\n';  
+  help += 'Thats all I know... for now!\n';
+  help += '\`\`\`';
+
+  message.channel.send(help);
 }
 
-function playClip(message){  
+function playClip(clipName){  
 
   //TODO
   //figure out why bot doesnt fire message on first call
 
   console.info('inside play clip');
-  let msg = message.content;
-  
-  if(clips.has(msg)){
-    var clip = clips.get(msg);
-    let nameMinusExclamationMark = clip.name.replace(prefix,'');
-    let mp3FileName = `${nameMinusExclamationMark}.mp3`;
+  if(clips.has(clipName)){
+    const clip = clips.get(clipName);
+    let mp3FileName = `${clip.name}.mp3`;
 
     const dispatcher = connection.play(path.join(paths.audio, mp3FileName), {
       volume: clip.volume,
     });
     
   }else{
-    console.info(`clip ${ msg } not found`);
+    console.info(`clip ${ clipName } not found`);
   }
 
 }
@@ -123,19 +120,23 @@ function playClip(message){
 //MAIN
 bot.on('message', async message => {
 
-  //Setup clipsAndVolumes for use
+    //Setup clipsAndVolumes for use
   handleFiles(); 
 
   console.info('message received');
 
-  if(await validate(message)){    
-    if(message.content === '!help'){
+  if(await validate(message)){
+
+    //trying to limit the surface area of prefix throughout the code
+    let commandName = message.content.replace(prefix,'');
+
+    if(commandName === 'help'){
       helpTheNoobs(message);
-    }else if(message.content === '!begone'){
-           message.member.voice.channel.leave();
+    }else if(commandName === 'begone'){
+      message.member.voice.channel.leave();
     }
     else{      
-      playClip(message);
+      playClip(commandName);
     }
   }else{
     //TODO
