@@ -1,27 +1,30 @@
 require('dotenv').config();
 
+const fs = require('fs');
 const Discord = require('discord.js');
 const bot = new Discord.Client();
+bot.commands = new Discord.Collection();
 const path = require('path');
-const clipsSpec = require('./clips.json');
 const { TOKEN, prefix } = process.env;
-const Clip = require('./Clip.js');
+
 const paths = {
   audio : null
 }
-
-var clips = new Map();
 
 bot.login(TOKEN);
 
 bot.on('ready', () => {
   console.info(`Logged in as ${bot.user.tag}!`);
-
-  //Setup clip meta for use
-  loadAudio();
   
   paths.audio = path.join(__dirname, 'audio');
 });
+
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+
+for (const file of commandFiles) {
+  const command = require(`./commands/${file}`);
+  bot.commands.set(command.name, command);
+}
 
 async function getConnection(message){
   if (message.member.voice.channel) {
@@ -51,15 +54,6 @@ async function isValidCommand(message) {
 
   //all good
   return true;  
-
-}
-
-function loadAudio() {
-
-  clipsSpec.clips.forEach(clipSpec => {
-    const clip = new Clip(clipSpec.name, clipSpec.volume, clipSpec.file);
-    clips.set(clip.name, clip);
-  })
 
 }
 
@@ -94,51 +88,47 @@ function helpTheNoobs(message){
   message.channel.send(help);
 }
 
-function playClip(clipName){  
-
-
-  console.info('inside play clip');
-
-  if(clips.has(clipName)){
-    const clip = clips.get(clipName);
-
-    const dispatcher = connection.play(path.join(paths.audio, clip.file), {
-      volume: clip.volume,
-    });
-    
-  }else{
-    console.info(`clip ${ clipName } not found`);
-  }
-
-}
-
 //MAIN
 bot.on('message', async message => {
 
-  console.info('message received');
+	const args = message.content.slice(prefix.length).trim().split(/ +/);
+	const command = args.shift().toLowerCase();
 
   // guard clauses to immediately stop processing invalid messages
   if (!canProcessMessage(message)) return;
 
-  if(await isValidCommand(message)){
+  if (!bot.commands.has(command)) return;
 
-    //trying to limit the surface area of prefix throughout the code
-    let commandName = message.content.replace(prefix,'');
-
-    if(commandName === 'help'){
-      helpTheNoobs(message);
-    }else if(commandName === 'gtfo'){
-      bot.destroy();
-      process.exit(0);
-    }else if(commandName === 'begone'){
-      message.member.voice.channel.leave();
-    }else{      
-      playClip(commandName);
+  try {
+    const connection = await message.member.voice.channel.join();
+    const commandContext = {
+      message,
+      process,
+      bot,
+      connection
     }
-  }else{
-    //TODO
-    //maybe use default funny fail message of some sort??
-    message.channel.send(`${message.author.username} is a noob. Use !help noob skum.`);
+    bot.commands.get(command).execute(commandContext, args);
+  } catch (error) {
+    console.error(error);
+    message.reply('there was an error trying to execute that command!');
   }
+
+  // if(await isValidCommand(message)){
+
+  //   if(command === 'help'){
+  //     helpTheNoobs(message);
+  //   }else if(command === 'gtfo'){
+  //     bot.destroy();
+  //     process.exit(0);
+  //   }else if(command === 'begone'){
+  //     message.member.voice.channel.leave();
+  //   }else{      
+  //     playClip(command);
+  //   }
+  // }else{
+  //   //TODO
+  //   //maybe use default funny fail message of some sort??
+  //   message.channel.send(`${message.author.username} is a noob. Use !help noob skum.`);
+  // }
  
 });
