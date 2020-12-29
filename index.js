@@ -13,7 +13,7 @@ const paths = {
 
 bot.login(TOKEN);
 
-bot.on('ready', () => {
+bot.once('ready', () => {
   console.info(`Logged in as ${bot.user.tag}!`);
   
   paths.audio = path.join(__dirname, 'audio');
@@ -45,7 +45,7 @@ bot.on('message', async message => {
 
   // guard clauses to immediately stop processing invalid messages
   if (!canProcessMessage(message)) return;
-
+  // skip commands we do not know
   if (!bot.commands.has(command)) return;
 
   try {

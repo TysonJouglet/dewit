@@ -28,7 +28,6 @@ module.exports = {
 	name: 'help',
 	description: 'List all commands!',
 	execute: ({bot, message, prefix}) => {
-    message.channel.send('');
     helpTheNoobs(bot, message, prefix);
 	},
 };
