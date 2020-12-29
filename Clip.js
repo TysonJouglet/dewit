@@ -1,7 +1,7 @@
 const defaultVolume = 1.2;
 const defaultExtension = ".mp3";
 
-module.exports = class Clip {
+class Clip {
   
   constructor(name, volume, file){
     this.name = name;
@@ -9,3 +9,5 @@ module.exports = class Clip {
     this.file = file ? file : name+defaultExtension;
   }
 }
+
+module.exports = Clip;

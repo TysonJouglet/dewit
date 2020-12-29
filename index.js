@@ -11,6 +11,10 @@ const paths = {
   audio : null
 }
 
+const CHANNEL_TYPE = {
+  "DIRECT_MESSAGE" : 'dm'
+}
+
 bot.login(TOKEN);
 
 bot.once('ready', () => {
@@ -34,6 +38,9 @@ function canProcessMessage(message){
   // cannot be a command issued by the bot
   if (message.author.username === bot.user.username) return false;
 
+  //reject direct messages
+  if (message.channel.type === CHANNEL_TYPE.DIRECT_MESSAGE) return false;
+
   return true;
 }
 
@@ -41,12 +48,15 @@ function canProcessMessage(message){
 bot.on('message', async message => {
 
   const args = message.content.slice(prefix.length).trim().split(/ +/);
-  const command = args.shift().toLowerCase();
+  const commandName = args.shift().toLowerCase();
 
   // guard clauses to immediately stop processing invalid messages
   if (!canProcessMessage(message)) return;
-  // skip commands we do not know
-  if (!bot.commands.has(command)) return;
+
+  //find command by name or alias
+  const command = bot.commands.get(commandName) || bot.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+
+  if ( !command ) return;
 
   try {
 
@@ -58,7 +68,7 @@ bot.on('message', async message => {
       prefix
     }
 
-    bot.commands.get(command).execute(commandContext, args);
+    command.execute(commandContext, args);
 
   } catch (error) {
     console.error(error);

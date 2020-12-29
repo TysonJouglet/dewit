@@ -2,7 +2,7 @@ const clipsSpec = require('../clips.json');
 const Clip = require('../Clip.js');
 const clips = new Map();
 const path = require('path');
-
+let dispatcher;
 function loadAudio() {
 
   clipsSpec.clips.forEach(clipSpec => {
@@ -14,7 +14,7 @@ function loadAudio() {
 
 function playClip(clipName, connection, audioPath){
   const clip = clips.get(clipName);
-  const dispatcher = connection.play(path.join(audioPath,clip.file), {
+  dispatcher = connection.play(path.join(audioPath,clip.file), {
     volume: clip.volume
   });
 }
