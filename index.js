@@ -40,8 +40,8 @@ function canProcessMessage(message){
 //MAIN
 bot.on('message', async message => {
 
-	const args = message.content.slice(prefix.length).trim().split(/ +/);
-	const command = args.shift().toLowerCase();
+  const args = message.content.slice(prefix.length).trim().split(/ +/);
+  const command = args.shift().toLowerCase();
 
   // guard clauses to immediately stop processing invalid messages
   if (!canProcessMessage(message)) return;
