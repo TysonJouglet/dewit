@@ -2,10 +2,19 @@ const ytdl = require('ytdl-core');
 let dispatcher;
 let connection
 
+let replay = true;
+
 function play(videoUrl){
-  dispatcher = connection.play(ytdl(videoUrl, { filter: 'audioonly' }),{
-    volume: 0.01
+  dispatcher = connection.play(ytdl(videoUrl, { filter: 'audioonly' }), {
+    volume: 0.02
   });
+  if(replay){
+    dispatcher.on('finish',() => {
+      console.info(`video ended, playing: ${videoUrl}`);
+      play(videoUrl);
+    });
+  }
+
 }
 
 function setVolume(volume){

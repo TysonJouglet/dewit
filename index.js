@@ -5,7 +5,8 @@ const Discord = require('discord.js');
 const bot = new Discord.Client();
 bot.commands = new Discord.Collection();
 const path = require('path');
-const { TOKEN, prefix } = process.env;
+const { TOKEN } = process.env;
+const { prefix } = require('./config.json');
 
 const paths = {
   audio : null
