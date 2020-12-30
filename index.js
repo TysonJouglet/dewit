@@ -21,7 +21,7 @@ bot.registry
 
 bot.once('ready', () => {
   console.info(`Logged in as ${bot.user.tag}!`);
-  bot.user.setActivity('with Commando');
+  bot.user.setActivity('with classified material 😈');
 });
 
 bot.on('error', console.error);
