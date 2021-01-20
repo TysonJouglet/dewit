@@ -14,6 +14,7 @@ bot.registry
   .registerGroups([
       ['misc', 'Assortment of random commands'],
       ['audio', 'Play audio clips in a voice channel'],
+      ['music', 'Play music in a voice channel.']
   ])
   // Registers all built-in groups, commands, and argument types
   .registerDefaults()
